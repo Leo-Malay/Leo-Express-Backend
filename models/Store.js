@@ -29,4 +29,14 @@ const StoreProductModel = db.model(
     "Store-Product"
 );
 
-module.exports = { StoreProductModel };
+const StoreCartModel = db.model(
+    "Store-Cart",
+    new mongooseSchema({
+        userId: { type: mongooseObjectId, required: true },
+        cart: { type: Array },
+        order: { type: Array },
+    }),
+    "Store-Cart"
+);
+
+module.exports = { StoreProductModel, StoreCartModel };
