@@ -2,7 +2,11 @@ const bcrypt = require("bcrypt");
 const AuthModel = require("../models/Auth");
 const { response } = require("../utils/response");
 const { encodeToken } = require("../utils/token");
+
 const NewAccount = async (req, res) => {
+    /**
+     * Body: name, email, password
+     */
     const account = await AuthModel.exists({ email: req.body.email });
     if (account !== null) return response(res, false, "Already Exists");
     else {
@@ -40,6 +44,9 @@ const Account = (req, res) => {
     );
 };
 const Login = async (req, res) => {
+    /**
+     * Body: email, password
+     */
     AuthModel.findOne(
         { email: req.body.email },
         { "local.password": 1, name: 1 },

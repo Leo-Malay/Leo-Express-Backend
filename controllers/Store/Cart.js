@@ -2,6 +2,9 @@ const { StoreCartModel } = require("../../models/Store");
 const { response } = require("../../utils/response");
 
 const AddCart = async (req, res) => {
+    /**
+     * Body: productId, optionId, qty
+     */
     if ((await StoreCartModel.exists({ userId: req.tokenData._id })) === null)
         await createCart(req.tokenData._id);
     StoreCartModel.updateOne(
@@ -16,6 +19,9 @@ const AddCart = async (req, res) => {
     );
 };
 const UpdateQty = (req, res) => {
+    /**
+     * Body: productId, optionId, qty
+     */
     StoreCartModel.updateOne(
         {
             userId: req.tokenData._id,
@@ -36,6 +42,9 @@ const UpdateQty = (req, res) => {
     );
 };
 const RemoveCart = async (req, res) => {
+    /**
+     * Body: productId, optionId
+     */
     if ((await StoreCartModel.exists({ userId: req.tokenData._id })) === null)
         await createCart(req.tokenData._id);
     StoreCartModel.updateOne(

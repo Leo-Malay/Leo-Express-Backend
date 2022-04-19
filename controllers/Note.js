@@ -3,6 +3,9 @@ const { response } = require("../utils/response");
 const mongooseObjectId = require("mongoose").Types.ObjectId;
 
 const NewNote = async (req, res) => {
+    /**
+     * Body: title, description, priority, deadline
+     */
     if ((await NoteModel.exists({ userId: req.tokenData._id })) === null)
         await createNote(req.tokenData._id);
     NoteModel.updateOne(
@@ -27,6 +30,9 @@ const NewNote = async (req, res) => {
     );
 };
 const UpdateNote = (req, res) => {
+    /**
+     * Body: noteId, title, description, priority, deadline
+     */
     NoteModel.updateOne(
         {
             userId: req.tokenData._id,
@@ -50,6 +56,9 @@ const UpdateNote = (req, res) => {
     );
 };
 const RemoveNote = async (req, res) => {
+    /**
+     * Body: noteId
+     */
     if ((await NoteModel.exists({ userId: req.tokenData._id })) === null)
         await createNote(req.tokenData._id);
     NoteModel.updateOne(

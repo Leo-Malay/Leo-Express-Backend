@@ -3,6 +3,9 @@ const { response } = require("../../utils/response");
 const mongooseObjectId = require("mongoose").Types.ObjectId;
 
 const NewProduct = (req, res) => {
+    /**
+     * Body: name, options:{data, price, availableStock}, [descriptions], [images], {specs}, [offers]
+     */
     const query = new StoreProductModel({
         name: req.body.name,
         options: req.body.options,
@@ -18,6 +21,9 @@ const NewProduct = (req, res) => {
     });
 };
 const UpdateProduct = (req, res) => {
+    /**
+     * Body: productId, updates
+     */
     delete req.body.updates["soldBy"];
     StoreProductModel.updateOne(
         {
@@ -34,6 +40,9 @@ const UpdateProduct = (req, res) => {
     );
 };
 const DeleteProduct = async (req, res) => {
+    /**
+     * Body: productId
+     */
     StoreProductModel.deleteOne(
         {
             _id: mongooseObjectId(req.body.productId),

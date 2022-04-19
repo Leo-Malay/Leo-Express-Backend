@@ -3,6 +3,9 @@ const mongooseObjectId = require("mongoose").Types.ObjectId;
 const { response } = require("../../utils/response");
 
 const PlaceOrder = (req, res) => {
+    /**
+     * Body: txnId, type, amount
+     */
     StoreCartModel.findOne(
         { userId: req.tokenData._id },
         { cart: 1 },
@@ -38,6 +41,9 @@ const PlaceOrder = (req, res) => {
     );
 };
 const CancelOrder = (req, res) => {
+    /**
+     * Body: orderId
+     */
     StoreCartModel.updateOne(
         {
             userId: req.tokenData._id,
