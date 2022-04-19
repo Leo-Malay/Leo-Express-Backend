@@ -3,7 +3,7 @@ const { response } = require("../../utils/response");
 
 const AddCart = async (req, res) => {
     if ((await StoreCartModel.exists({ userId: req.tokenData._id })) === null)
-        createCart(req.tokenData._id);
+        await createCart(req.tokenData._id);
     StoreCartModel.updateOne(
         { userId: req.tokenData._id },
         { $addToSet: { cart: req.body } },
@@ -37,7 +37,7 @@ const UpdateQty = (req, res) => {
 };
 const RemoveCart = async (req, res) => {
     if ((await StoreCartModel.exists({ userId: req.tokenData._id })) === null)
-        createCart(req.tokenData._id);
+        await createCart(req.tokenData._id);
     StoreCartModel.updateOne(
         { userId: req.tokenData._id },
         { $pull: { cart: req.body } },
@@ -50,9 +50,9 @@ const RemoveCart = async (req, res) => {
     );
 };
 // Helper Function
-const createCart = (userId) => {
+const createCart = async (userId) => {
     const query = new StoreCartModel({ userId });
-    query.save();
+    await query.save();
 };
 
 module.exports = { AddCart, UpdateQty, RemoveCart };

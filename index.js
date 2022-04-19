@@ -8,6 +8,8 @@ app.use(express.json());
 // Routes.
 app.use("/auth", require("./routes/Auth"));
 app.use("/store", require("./routes/Store"));
+app.use("/note", require("./routes/Note"));
+
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
     console.log("Leo-Backend started listening at", PORT);

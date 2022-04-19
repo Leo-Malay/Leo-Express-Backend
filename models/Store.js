@@ -13,6 +13,7 @@ const StoreProductModel = db.model(
                 availableStock: { type: Number, required: true, min: 0 },
             },
         ],
+        category: { type: String, required: true, default: "General" },
         description: { type: Array, required: true },
         images: { type: Array, required: false },
         specs: { type: Object, required: true },
@@ -34,7 +35,24 @@ const StoreCartModel = db.model(
     new mongooseSchema({
         userId: { type: mongooseObjectId, required: true },
         cart: { type: Array },
-        order: { type: Array },
+        order: [
+            {
+                status: { type: String, required: true },
+                deliveryDate: { type: Number, required: false, default: null },
+                cancelDate: { type: Number, required: false, default: null },
+                orderDate: {
+                    type: Number,
+                    required: false,
+                    default: Date.now(),
+                },
+                package: { type: Array },
+                payment: {
+                    txnId: { type: String, required: true },
+                    type: { type: String, required: true },
+                    amount: { type: Number, required: true, min: 0 },
+                },
+            },
+        ],
     }),
     "Store-Cart"
 );

@@ -14,7 +14,7 @@ const decodeToken = async (req, res, next) => {
             return response(res, false, "MisMatch Token");
         else
             jwt.verify(req.token, key, function (err, decoded) {
-                if (err) response(res, false, "Token Error", err);
+                if (err) return response(res, false, "Token Error", err);
                 req.tokenData = decoded.data;
                 next();
             });
