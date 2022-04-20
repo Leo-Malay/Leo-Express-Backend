@@ -74,10 +74,88 @@ const UpdateAvailableStock = (req, res) => {
         }
     );
 };
+const AddOption = (req, res) => {
+    /**
+     * Body: productId, data, price, availableStock
+     */
+    StoreProductModel.updateOne(
+        {
+            _id: mongooseObjectId(req.body.productId),
+            soldBy: req.tokenData._id,
+        },
+        {
+            $addToSet: {
+                options: {
+                    data: req.body.data,
+                    price: req.body.price,
+                    availableStock: req.body.availableStock,
+                },
+            },
+        },
+        (err, result) => {
+            if (err) throw err;
+            if (result.modifiedCount === 1) response(res, true, "Option Added");
+            else response(res, false, "Unable to add options");
+        }
+    );
+};
+const UpdateOption = (req, res) => {
+    /**
+     * Body: productId, optionId, data, price
+     */
+    StoreProductModel.updateOne(
+        {
+            productId: mongooseObjectId(req.body.productId),
+            soldBy: req.tokenData._id,
+            options: {
+                $elemMatch: { _id: mongooseObjectId(req.body.optionId) },
+            },
+        },
+        {
+            $set: {
+                "options.$.data": req.body.data,
+                "options.$.price": req.body.price,
+            },
+        },
+        (err, result) => {
+            if (err) throw err;
+            if (result.modifiedCount === 1)
+                response(res, true, "Option Updated");
+            else response(res, false, "Unable to update option");
+        }
+    );
+};
+const RemoveOption = (req, res) => {
+    /**
+     * Body: productId, optionId
+     */
+    StoreProductModel.updateOne(
+        {
+            productId: mongooseObjectId(req.body.productId),
+            soldBy: req.tokenData._id,
+        },
+        {
+            $pull: {
+                options: {
+                    _id: mongooseObjectId(req.body.optionId),
+                },
+            },
+        },
+        (err, result) => {
+            if (err) throw err;
+            if (result.modifiedCount === 1)
+                response(res, true, "Option Removed");
+            else response(res, false, "Unable to remove option");
+        }
+    );
+};
 
 module.exports = {
     NewProduct,
     UpdateProduct,
     DeleteProduct,
     UpdateAvailableStock,
+    AddOption,
+    UpdateOption,
+    RemoveOption,
 };
