@@ -29,32 +29,34 @@ const StoreProductModel = db.model(
     }),
     "Store-Product"
 );
-
 const StoreCartModel = db.model(
     "Store-Cart",
     new mongooseSchema({
         userId: { type: mongooseObjectId, required: true },
         cart: { type: Array },
-        order: [
-            {
-                status: { type: String, required: true },
-                deliveryDate: { type: Number, required: false, default: null },
-                cancelDate: { type: Number, required: false, default: null },
-                orderDate: {
-                    type: Number,
-                    required: false,
-                    default: Date.now(),
-                },
-                package: { type: Array },
-                payment: {
-                    txnId: { type: String, required: true },
-                    type: { type: String, required: true },
-                    amount: { type: Number, required: true, min: 0 },
-                },
-            },
-        ],
     }),
     "Store-Cart"
 );
+const StoreOrderModel = db.model(
+    "Store-Order",
+    new mongooseSchema({
+        userId: { type: mongooseObjectId, required: true },
+        status: { type: String, required: true },
+        deliveryDate: { type: Number, required: false, default: null },
+        cancelDate: { type: Number, required: false, default: null },
+        orderDate: {
+            type: Number,
+            required: false,
+            default: Date.now(),
+        },
+        order: { type: Array },
+        payment: {
+            txnId: { type: String, required: true },
+            type: { type: String, required: true },
+            amount: { type: Number, required: true, min: 0 },
+        },
+    }),
+    "Store-Order"
+);
 
-module.exports = { StoreProductModel, StoreCartModel };
+module.exports = { StoreProductModel, StoreCartModel, StoreOrderModel };
