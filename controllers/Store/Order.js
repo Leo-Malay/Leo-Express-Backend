@@ -41,7 +41,7 @@ const CancelOrder = (req, res) => {
     /**
      * Body: orderId
      */
-    StoreOrderModel.deleteOne(
+    StoreOrderModel.updateOne(
         {
             _id: mongooseObjectId(req.body.orderId),
             userId: req.tokenData._id,
