@@ -5,7 +5,7 @@ const mongooseObjectId = require("mongoose").Types.ObjectId;
 const FoodieProductModel = db.model(
     "Foodie-Product",
     new mongooseSchema({
-        organizationId: { type: String, required: true },
+        organizationId: { type: mongooseObjectId, required: true },
         image: { type: Array, required: false },
         name: { type: String, required: true },
         buyQtyLimit: { type: Number, required: true, min: 1 },
@@ -16,7 +16,6 @@ const FoodieProductModel = db.model(
         spiceLevel: {
             type: String,
             required: true,
-            enum: ["Low", "Moderate", "High"],
         },
         availableSizes: [
             {

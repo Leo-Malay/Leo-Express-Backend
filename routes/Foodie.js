@@ -8,6 +8,9 @@ const {
     AddProduct,
     UpdateProduct,
     RemoveProduct,
+    AddSize,
+    UpdateSize,
+    RemoveSize,
 } = require("../controllers/Foodie/Product");
 const {
     AddOrganization,
@@ -25,6 +28,9 @@ const FoodieRoute = require("express").Router();
 FoodieRoute.post("/product", decodeToken, AddProduct);
 FoodieRoute.put("/product", decodeToken, UpdateProduct);
 FoodieRoute.delete("/product", decodeToken, RemoveProduct);
+FoodieRoute.post("/product/size", decodeToken, AddSize);
+FoodieRoute.put("/product/size", decodeToken, UpdateSize);
+FoodieRoute.delete("/product/size", decodeToken, RemoveSize);
 FoodieRoute.post("/cart", decodeToken, AddCart);
 FoodieRoute.put("/cart", decodeToken, UpdateCart);
 FoodieRoute.delete("/cart", decodeToken, RemoveCart);
