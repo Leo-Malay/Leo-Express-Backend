@@ -1,6 +1,6 @@
 const {
     AddCart,
-    UpdateCart,
+    UpdateQty,
     RemoveCart,
 } = require("../controllers/Foodie/Cart");
 const { PlaceOrder, CancelOrder } = require("../controllers/Foodie/Order");
@@ -32,7 +32,7 @@ FoodieRoute.post("/product/size", decodeToken, AddSize);
 FoodieRoute.put("/product/size", decodeToken, UpdateSize);
 FoodieRoute.delete("/product/size", decodeToken, RemoveSize);
 FoodieRoute.post("/cart", decodeToken, AddCart);
-FoodieRoute.put("/cart", decodeToken, UpdateCart);
+FoodieRoute.put("/cart", decodeToken, UpdateQty);
 FoodieRoute.delete("/cart", decodeToken, RemoveCart);
 FoodieRoute.post("/order", decodeToken, PlaceOrder);
 FoodieRoute.delete("/order", decodeToken, CancelOrder);

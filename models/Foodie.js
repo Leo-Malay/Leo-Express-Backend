@@ -41,7 +41,19 @@ const FoodieOrderModel = db.model(
         userId: { type: mongooseObjectId, required: true },
         status: { type: String, required: true },
         order: { type: Array },
+        deliveryDate: { type: Number, required: false, default: null },
+        cancelDate: { type: Number, required: false, default: null },
+        orderDate: {
+            type: Number,
+            required: false,
+            default: Date.now(),
+        },
         type: { type: String, required: true, enum: ["TakeOut", "Delivery"] },
+        payment: {
+            txnId: { type: String, required: true },
+            type: { type: String, required: true },
+            amount: { type: Number, required: true, min: 0 },
+        },
         address: { type: Object, required: false },
     }),
     "Foodie-Order"
