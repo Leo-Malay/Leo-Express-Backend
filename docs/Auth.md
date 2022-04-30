@@ -2,6 +2,7 @@
 
 ### By Malay Bhavsar
 
+<p>Base Path: {{url}}/auth</p>
 <table>
     <tr>
         <th>Sr No</th>
