@@ -1,4 +1,5 @@
 const EventModel = require("../models/Events");
+const AuthModel = require("../models/Auth");
 const { response } = require("../utils/response");
 const mongooseObjectId = require("mongoose").Types.ObjectId;
 
@@ -11,7 +12,6 @@ const Event = (req, res) => {
     else if (req.query.registered && req.query.registered === "1")
         query["registration.attendee"] = req.tokenData._id;
 
-    console.log(req.query, query);
     EventModel.find(query, (err, data) => {
         if (err) throw err;
         return response(res, true, "Event Fetched", data);
@@ -19,7 +19,7 @@ const Event = (req, res) => {
 };
 const AddEvent = (req, res) => {
     /**
-     * Body: category, title, description, image, tags, venue, date, paid, price, deadline, rules
+     * Body: category, title, description, image, tags, venue, date, paid, price, deadline, rules, numAttendee
      */
     const query = new EventModel({
         userId: req.tokenData._id,
@@ -34,6 +34,7 @@ const AddEvent = (req, res) => {
         },
         fee: { paid: req.body.paid, price: req.body.price || 0 },
         registration: {
+            numAttendee: req.body.numAttendee,
             deadline: req.body.deadline || null,
             rules: req.body.rules || [],
         },
@@ -62,6 +63,7 @@ const UpdateEvent = (req, res) => {
                 "event.date": req.body.date,
                 "fee.paid": req.body.paid,
                 "fee.price": req.body.price,
+                "registration.numAttendee": req.body.numAttendee,
                 "registration.deadline": req.body.deadline,
                 "registration.rules": req.body.rules,
             },
@@ -97,9 +99,12 @@ const RegisterEvent = (req, res) => {
     EventModel.updateOne(
         {
             _id: mongooseObjectId(req.body.eventId),
+            "registration.numAttendee": { $gt: 0 },
+            "registration.deadline": { $gt: Date.now() },
         },
         {
             $addToSet: { "registration.attendee": req.tokenData._id },
+            $inc: { "registration.numAttendee": -1 },
         },
         (err, result) => {
             if (err) throw err;
@@ -119,12 +124,70 @@ const UnregisterEvent = (req, res) => {
         },
         {
             $pull: { "registration.attendee": req.tokenData._id },
+            $inc: { "registration.numAttendee": 1 },
         },
         (err, result) => {
             if (err) throw err;
             if (result.modifiedCount === 1)
                 response(res, true, "Unregistered from Event");
             else response(res, false, "Unable to unregister");
+        }
+    );
+};
+const LikeEvent = async (req, res) => {
+    /**
+     * BODY: eventId
+     */
+    var query = {};
+    if (
+        await EventModel.exists({
+            _id: mongooseObjectId(req.body.eventId),
+            likes: { $in: req.tokenData._id },
+        })
+    )
+        query = { $pull: { likes: req.tokenData._id } };
+    else query = { $addToSet: { likes: req.tokenData._id } };
+    EventModel.updateOne(
+        {
+            _id: mongooseObjectId(req.body.eventId),
+        },
+        query,
+        (err, result) => {
+            if (err) throw err;
+            if (result.modifiedCount === 1)
+                response(res, true, "toggled like for event");
+            else response(res, false, "Unable to toggle like for event");
+        }
+    );
+};
+const GetLikedEvent = (req, res) => {
+    EventModel.find(
+        {
+            likes: { $in: req.tokenData._id },
+        },
+        (err, data) => {
+            if (err) throw err;
+            return response(res, true, "Liked Event Fetched", data);
+        }
+    );
+};
+const GetAttendeeList = (req, res) => {
+    /**
+     * Body: eventId
+     */
+    EventModel.findOne(
+        { _id: mongooseObjectId(req.query.eventId) },
+        { "registration.attendee": 1 },
+        (err, data) => {
+            if (err) throw err;
+            AuthModel.find(
+                { _id: { $in: data.registration.attendee } },
+                { name: 1, email: 1, _id: 0 },
+                (err, data1) => {
+                    if (err) throw err;
+                    response(res, true, "Fetched Attendee List", data1);
+                }
+            );
         }
     );
 };
@@ -136,4 +199,7 @@ module.exports = {
     RemoveEvent,
     RegisterEvent,
     UnregisterEvent,
+    LikeEvent,
+    GetLikedEvent,
+    GetAttendeeList,
 };

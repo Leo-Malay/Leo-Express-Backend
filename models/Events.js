@@ -20,10 +20,12 @@ const EventModel = db.model(
             price: { type: Number, required: false },
         },
         registration: {
+            numAttendee: { type: Number, required: false, default: null },
             attendee: { type: Array },
             deadline: { type: Number, required: false, default: null },
             rules: { type: Array },
         },
+        likes: { type: Array, required: false, default: [] },
         createDate: {
             type: Number,
             required: false,

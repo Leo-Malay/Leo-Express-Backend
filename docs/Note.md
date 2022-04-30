@@ -2,7 +2,7 @@
 
 ### By Malay Bhavsar
 
-<p>Base Path: {{url}}/note</p>
+<p><b>Base Path:</b> {{url}}/note</p>
 <table>
     <tr>
         <th>Sr No</th>

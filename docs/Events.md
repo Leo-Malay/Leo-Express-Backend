@@ -2,7 +2,7 @@
 
 ### By Malay Bhavsar
 
-<p>Base Path: {{url}}/event</p>
+<p><b>Base Path:</b> {{url}}/event</p>
 <table>
     <tr>
         <th>Sr No</th>
@@ -18,7 +18,7 @@
     <td>GET</td>
     <td>Yes</td>
     <td>userId^, registered^</td>
-    <td>TO get the list of Events.
+    <td>To get the list of Events.
     Pass userId of a specific user to get list of events of that user.<br/>
     Pass registered = '1' to get the list of events you are registered in</td>
 </tr>
@@ -27,7 +27,7 @@
     <td>/</td>
     <td>POST</td>
     <td>Yes</td>
-    <td>category, title, description, [image], [tags], venue, date, paid, price, deadline, [rules]</td>
+    <td>category, title, description, [image], [tags], venue, date, paid, price, deadline, [rules], numAttendee</td>
     <td>To Enlist an event of your Own</td>
 </tr>
 <tr>
@@ -62,7 +62,31 @@
     <td>eventId</td>
     <td>To unregister for the event</td>
 </tr>
+<tr>
+    <td>7</td>
+    <td>/like</td>
+    <td>POST</td>
+    <td>Yes</td>
+    <td>eventId</td>
+    <td>To toggle like for a specific event</td>
+</tr>
+<tr>
+    <td>8</td>
+    <td>/like</td>
+    <td>GET</td>
+    <td>Yes</td>
+    <td></td>
+    <td>Get list of all the events liked by the user</td>
+</tr>
+<tr>
+    <td>9</td>
+    <td>/attendee</td>
+    <td>GET</td>
+    <td>Yes</td>
+    <td>eventId</td>
+    <td>Get Names and Emails of all the attendees. Only Available to Owner of event</td>
+</tr>
 </table>
 
 <br/>
-<b><i>^ = optional paramater for the request</i><b>
+<b><i>^ = optional parameter for the request</i><b>
