@@ -2,6 +2,17 @@ const NoteModel = require("../models/Notes");
 const { response } = require("../utils/response");
 const mongooseObjectId = require("mongoose").Types.ObjectId;
 
+const Note = (req, res) => {
+    NoteModel.findOne(
+        {
+            userId: mongooseObjectId(req.tokenData._id),
+        },
+        (err, data) => {
+            if (err) throw err;
+            response(res, true, "Note Found", data.notes);
+        }
+    );
+};
 const NewNote = async (req, res) => {
     /**
      * Body: title, description, priority, deadline
@@ -85,4 +96,4 @@ const createNote = async (userId) => {
     const query = new NoteModel({ userId });
     await query.save();
 };
-module.exports = { NewNote, UpdateNote, RemoveNote };
+module.exports = { Note, NewNote, UpdateNote, RemoveNote };
