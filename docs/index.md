@@ -2,10 +2,9 @@
 
 ### By Malay Bhavsar
 
-<h3><b>Index</b><h3>
 <table>
 <tr>
-<td colspan='3'></td>
+<td colspan='3'>Index</td>
 </tr>
 <tr>
 <th>Sr No</th>
