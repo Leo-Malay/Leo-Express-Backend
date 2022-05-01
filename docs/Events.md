@@ -1,4 +1,4 @@
-# Note API Documentation
+# Events API Documentation
 
 ### By Malay Bhavsar
 

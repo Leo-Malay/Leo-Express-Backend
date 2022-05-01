@@ -57,6 +57,9 @@ const DeleteProduct = async (req, res) => {
     );
 };
 const UpdateAvailableStock = (req, res) => {
+    /**
+     * BODY: productId, optionId, availableStock
+     */
     StoreProductModel.updateOne(
         {
             _id: mongooseObjectId(req.body.productId),
