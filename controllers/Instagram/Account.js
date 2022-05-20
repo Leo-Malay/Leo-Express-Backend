@@ -1,0 +1,10 @@
+const Profile = (req, res) => {};
+const ProfileIcon = (req, res) => {};
+const Bio = (req, res) => {};
+const Follow = (req, res) => {};
+const ApproveFollow = (req, res) => {};
+const RejectFollow = (req, res) => {};
+const UnFollow = (req, res) => {};
+const GetFollower = (req, res) => {};
+const GetFollowing = (req, res) => {};
+const GetPendingFollow = (req, res) => {};
