@@ -9,6 +9,7 @@ const InstagramAccountModel = db.model(
         username: { type: String, required: true, unique: true },
         name: { type: String, reqired: true },
         bio: { type: String, reqired: false, default: "" },
+        locked: { type: Boolean, required: false, default: false },
         profileIcon: { type: String, reqired: false, default: null },
         posts: { type: Array, reqired: false, default: [] },
         followers: { type: Array, reqired: false, default: [] },
