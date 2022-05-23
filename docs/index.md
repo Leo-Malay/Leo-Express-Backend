@@ -36,4 +36,9 @@
 <td><a href="/Leo-Express-Backend/Events">Events</a></td>
 <td>9</td>
 </tr>
+<tr>
+<td>6</td>
+<td><a href="/Leo-Express-Backend/Blog">Blogs</a></td>
+<td>5</td>
+</tr>
 </table>
