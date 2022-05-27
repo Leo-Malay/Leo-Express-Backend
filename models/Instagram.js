@@ -28,7 +28,13 @@ const InstagramPostModel = db.model(
         people: { type: Array, required: false, default: [] },
         location: { type: String, required: false, default: null },
         likes: { type: Array, required: false, default: [] },
-        comments: { type: Array, required: false, default: [] },
+        comments: [
+            {
+                userId: { type: mongooseObjectId, required: true },
+                comment: { type: String, required: true },
+                likes: { type: Array, required: false, default: [] },
+            },
+        ],
     }),
     "InstagramPost"
 );

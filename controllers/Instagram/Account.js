@@ -3,17 +3,21 @@ const mongooseObjectId = require("mongoose").Types.ObjectId;
 const { response } = require("../../utils/response");
 
 const Register = async (req, res) => {
+    /**
+     * BODY: username, name, locked
+     */
     if (
-        await InstagramAccountModel.exists({
+        (await InstagramAccountModel.exists({
             userId: mongooseObjectId(req.tokenData._id),
-        })
+        })) !== null
     )
         return response(res, true, "Already Registered");
     else {
         const query = InstagramAccountModel({
-            username: req.data.username,
-            name: req.data.name,
-            locked: req.data.locked,
+            userId: req.tokenData._id,
+            username: req.body.username,
+            name: req.body.name,
+            locked: req.body.locked,
         });
         query.save((err, result) => {
             if (err) throw err;
@@ -26,7 +30,7 @@ const Profile = (req, res) => {
      * BODY: userId
      */
     InstagramAccountModel.findOne(
-        { userId: mongooseObjectId(req.body.userId) },
+        { userId: mongooseObjectId(req.query.userId) },
         (err, data) => {
             if (err) throw err;
             if (data.locked && data.follower.includes(req.tokenData._id))
@@ -52,14 +56,27 @@ const Profile = (req, res) => {
         }
     );
 };
-const ProfileIcon = (req, res) => {};
+const ProfileIcon = (req, res) => {
+    if (req.file) {
+        InstagramAccountModel.updateOne(
+            { userId: mongooseObjectId(req.tokenData._id) },
+            { profileIcon: req.file.filename },
+            (err, result) => {
+                if (err) throw err;
+                if (result.modifiedCount === 1)
+                    response(res, true, "Profile Upload Successful");
+                else response(res, false, "Unable to update Profile Photo");
+            }
+        );
+    } else response(res, false, "Unable to upload");
+};
 const Bio = (req, res) => {
     /**
      * BODY: bio
      */
     InstagramAccountModel.updateOne(
         { userId: mongooseObjectId(req.tokenData._id) },
-        { bio: req.data.bio },
+        { bio: req.body.bio },
         (err, result) => {
             if (err) throw err;
             if (result.modifiedCount === 1)
@@ -72,50 +89,78 @@ const Follow = async (req, res) => {
     /**
      * BODY: userId
      */
-    if (
-        await InstagramAccountModel.exists({
-            userId: mongooseObjectId(req.data.userId),
-            $includes: { following: req.tokenData._id },
-        })
-    )
-        return response(res, false, "You are alreading following this profile");
-    else
-        InstagramAccountModel.updateOne(
-            { userId: mongooseObjectId(req.data.userId) },
-            { $push: { pendingFollow: req.tokenData._id } },
-            (err, result) => {
-                if (err) throw err;
-                if (result.modifiedCount === 1)
-                    return response(res, true, "Follow request sent");
-                else
-                    return response(
-                        res,
-                        false,
-                        "Unable to send follow request"
-                    );
-            }
-        );
+    InstagramAccountModel.findOne(
+        { userId: mongooseObjectId(req.body.userId) },
+        { following: 1, pendingFollow: 1 },
+        (err, result) => {
+            if (err) throw err;
+            if (result.following.includes(req.tokenData._id))
+                response(
+                    res,
+                    false,
+                    "You are alreading following this profile"
+                );
+            else if (result.pendingFollow.includes(req.tokenData._id))
+                response(res, false, "Already request to follow");
+            else
+                InstagramAccountModel.updateOne(
+                    { userId: mongooseObjectId(req.body.userId) },
+                    { $push: { pendingFollow: req.tokenData._id } },
+                    (err, result) => {
+                        if (err) throw err;
+                        if (result.modifiedCount === 1)
+                            return response(res, true, "Follow request sent");
+                        else
+                            return response(
+                                res,
+                                false,
+                                "Unable to send follow request"
+                            );
+                    }
+                );
+        }
+    );
 };
 const ApproveFollow = (req, res) => {
     /**
      * BODY: userId
      */
-    InstagramAccountModel.updateOne(
+    InstagramAccountModel.findOne(
         { userId: mongooseObjectId(req.tokenData._id) },
         {
-            $pull: { pendingFollow: req.data.userId },
-            $push: { followers: req.data.userId },
+            pendingFollow: 1,
         },
-        (err, result) => {
+        (err, result0) => {
             if (err) throw err;
-            if (result.modifiedCount === 1)
+            if (result0.pendingFollow.includes(req.body.userId)) {
                 InstagramAccountModel.updateOne(
-                    { userId: mongooseObjectId(req.data.userId) },
-                    { $push: { following: req.tokenData._id } },
-                    (err, result1) => {
+                    { userId: mongooseObjectId(req.tokenData._id) },
+                    {
+                        $pull: { pendingFollow: req.body.userId },
+                        $addToSet: { followers: req.body.userId },
+                    },
+                    (err, result) => {
                         if (err) throw err;
-                        if (result1.modifiedCount === 1)
-                            return response(res, true, "Follow Accepted");
+                        if (result.modifiedCount === 1)
+                            InstagramAccountModel.updateOne(
+                                { userId: mongooseObjectId(req.body.userId) },
+                                { $addToSet: { following: req.tokenData._id } },
+                                (err, result1) => {
+                                    if (err) throw err;
+                                    if (result1.modifiedCount === 1)
+                                        return response(
+                                            res,
+                                            true,
+                                            "Follow Accepted"
+                                        );
+                                    else
+                                        return response(
+                                            res,
+                                            false,
+                                            "Unable to accept Follow"
+                                        );
+                                }
+                            );
                         else
                             return response(
                                 res,
@@ -124,7 +169,7 @@ const ApproveFollow = (req, res) => {
                             );
                     }
                 );
-            else return response(res, false, "Unable to accept Follow");
+            } else response(res, false, "Unable to approve follow");
         }
     );
 };
@@ -134,7 +179,7 @@ const RejectFollow = (req, res) => {
      */
     InstagramAccountModel.updateOne(
         { userId: mongooseObjectId(req.tokenData._id) },
-        { $pull: { pendingFollow: req.data.userId } },
+        { $pull: { pendingFollow: req.body.userId } },
         (err, result) => {
             if (err) throw err;
             if (result.modifiedCount === 1)
@@ -148,24 +193,32 @@ const UnFollow = (req, res) => {
      * BODY: userId
      */
     InstagramAccountModel.updateOne(
-        { userId: mongooseObjectId(req.tokenData._id) },
+        { userId: mongooseObjectId(req.body.userId) },
         {
-            $pull: { following: req.data.userId },
+            $pull: {
+                followers: req.tokenData._id,
+                pendingFollow: req.tokenData._id,
+            },
         },
-        (err, result) => {
+        (err, result1) => {
             if (err) throw err;
-            if (result.modifiedCount === 1)
+            if (result1.modifiedCount === 1)
                 InstagramAccountModel.updateOne(
-                    { userId: mongooseObjectId(req.data.userId) },
-                    { $push: { follower: req.tokenData._id } },
-                    (err, result1) => {
+                    { userId: mongooseObjectId(req.tokenData._id) },
+                    {
+                        $pull: { following: req.body.userId },
+                    },
+                    (err, result) => {
                         if (err) throw err;
-                        if (result1.modifiedCount === 1)
+                        if (
+                            result.modifiedCount === 1 ||
+                            result1.modifiedCount === 1
+                        )
                             return response(res, true, "Unfollowed");
-                        else return response(res, false, "Unable to unollow");
+                        else return response(res, false, "Unable to unfollow");
                     }
                 );
-            else return response(res, false, "Unable to unfollow");
+            else return response(res, false, "Unable to unFollow");
         }
     );
 };
@@ -175,7 +228,7 @@ const GetFollower = (req, res) => {
      */
     InstagramAccountModel.find(
         {
-            $includes: { userId: req.data.followers },
+            $includes: { userId: req.body.followers },
         },
         { username: 1, userId: 1, profileIcon: 1 },
         (err, data) => {
@@ -190,7 +243,7 @@ const GetFollowing = (req, res) => {
      */
     InstagramAccountModel.find(
         {
-            $includes: { userId: req.data.following },
+            $includes: { userId: req.body.following },
         },
         { username: 1, userId: 1, profileIcon: 1 },
         (err, data) => {
