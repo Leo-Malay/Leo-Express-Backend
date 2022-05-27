@@ -8,6 +8,7 @@ const {
     LikeComment,
     AddComment,
     RemoveComment,
+    Media,
 } = require("../controllers/Instagram/Post");
 const {
     Register,
@@ -72,5 +73,6 @@ InstaRoute.post("/like/post", decodeToken, Like);
 InstaRoute.post("/like/comment", decodeToken, LikeComment);
 InstaRoute.post("/comment", decodeToken, AddComment);
 InstaRoute.delete("/comment", decodeToken, RemoveComment);
+InstaRoute.get("/media", decodeToken, Media);
 
 module.exports = InstaRoute;

@@ -3,9 +3,11 @@ const {
     InstagramAccountModel,
 } = require("../../models/Instagram");
 const { response } = require("../../utils/response");
+const pathResolve = require("path").resolve;
 const mongooseObjectId = require("mongoose").Types.ObjectId;
 
 const Post = (req, res) => {};
+
 const NewPost = (req, res) => {
     const query = new InstagramPostModel({
         userId: req.tokenData._id,
@@ -67,7 +69,49 @@ const Like = (req, res) => {
         }
     );
 };
-const LikeComment = (req, res) => {};
+const LikeComment = (req, res) => {
+    /**
+     * BODY: postId, commentId
+     */
+    InstagramPostModel.findOne(
+        { _id: mongooseObjectId(req.body.postId) },
+        { comments: 1 },
+        (err, result) => {
+            if (err) throw err;
+            var query = {};
+            if (
+                result.comments.some((ele) => {
+                    return (
+                        String(ele._id) === req.body.commentId &&
+                        ele.likes.includes(req.tokenData._id)
+                    );
+                })
+            )
+                query = { $pull: { "comments.$.likes": req.tokenData._id } };
+            else
+                query = {
+                    $addToSet: { "comments.$.likes": req.tokenData._id },
+                };
+            InstagramPostModel.updateOne(
+                {
+                    _id: mongooseObjectId(req.body.postId),
+                    comments: {
+                        $elemMatch: {
+                            _id: req.body.commentId,
+                        },
+                    },
+                },
+                query,
+                (err, result1) => {
+                    if (err) throw err;
+                    if (result1.modifiedCount === 1)
+                        response(res, true, "like toggled");
+                    else response(res, false, "Somethig went wrong");
+                }
+            );
+        }
+    );
+};
 const AddComment = (req, res) => {
     InstagramPostModel.updateOne(
         { _id: mongooseObjectId(req.body.postId) },
@@ -108,7 +152,13 @@ const RemoveComment = (req, res) => {
         }
     );
 };
-
+const Media = (req, res) => {
+    res.sendFile(
+        pathResolve(
+            __dirname + "/../../uploads/instagram/post/" + req.query.name
+        )
+    );
+};
 module.exports = {
     Post,
     NewPost,
@@ -118,4 +168,5 @@ module.exports = {
     LikeComment,
     AddComment,
     RemoveComment,
+    Media,
 };
