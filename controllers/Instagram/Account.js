@@ -1,5 +1,6 @@
 const { InstagramAccountModel } = require("../../models/Instagram");
 const mongooseObjectId = require("mongoose").Types.ObjectId;
+const pathResolve = require("path").resolve;
 const { response } = require("../../utils/response");
 
 const Register = async (req, res) => {
@@ -264,6 +265,13 @@ const GetPendingFollow = (req, res) => {
         }
     );
 };
+const ProfileMedia = () => {
+    res.sendFile(
+        pathResolve(
+            __dirname + "/../../uploads/instagram/profile/" + req.query.name
+        )
+    );
+};
 
 module.exports = {
     Register,
@@ -277,4 +285,5 @@ module.exports = {
     GetFollower,
     GetFollowing,
     GetPendingFollow,
+    ProfileMedia,
 };

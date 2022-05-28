@@ -4,6 +4,7 @@ const {
 } = require("../../models/Instagram");
 const { response } = require("../../utils/response");
 const pathResolve = require("path").resolve;
+const fsUnlink = require("fs").unlink;
 const mongooseObjectId = require("mongoose").Types.ObjectId;
 
 const Post = (req, res) => {};
@@ -45,7 +46,39 @@ const UpdatePost = (req, res) => {
         }
     );
 };
-const RemovePost = (req, res) => {};
+const RemovePost = (req, res) => {
+    InstagramPostModel.findOneAndDelete(
+        {
+            _id: mongooseObjectId(req.body.postId),
+            userId: mongooseObjectId(req.tokenData._id),
+        },
+        (err, result) => {
+            if (err) throw err;
+            if (result)
+                InstagramAccountModel.updateOne(
+                    { userId: mongooseObjectId(req.tokenData._id) },
+                    { $pull: { posts: mongooseObjectId(req.body.postId) } },
+                    (err, result1) => {
+                        if (err) throw err;
+                        if (result1.modifiedCount === 1) {
+                            result.images.forEach((ele) => {
+                                fsUnlink(
+                                    pathResolve(
+                                        __dirname +
+                                            "/../../uploads/instagram/post/" +
+                                            ele
+                                    ),
+                                    () => {}
+                                );
+                            });
+                            response(res, true, "Post Removed");
+                        } else response(res, false, "Unable to Delete post");
+                    }
+                );
+            else response(res, false, "Unable to remove post");
+        }
+    );
+};
 const Like = (req, res) => {
     InstagramPostModel.findOne(
         { _id: mongooseObjectId(req.body.postId) },

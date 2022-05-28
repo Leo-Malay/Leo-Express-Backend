@@ -22,6 +22,7 @@ const {
     GetFollower,
     GetFollowing,
     GetPendingFollow,
+    ProfileMedia,
 } = require("../controllers/Instagram/Account");
 const { decodeToken } = require("../utils/token");
 const uploadProfile = require("multer")({
@@ -64,6 +65,7 @@ InstaRoute.delete("/follow/request", decodeToken, RejectFollow);
 InstaRoute.get("/follower", decodeToken, GetFollower);
 InstaRoute.get("/following", decodeToken, GetFollowing);
 InstaRoute.get("/pendingfollow", decodeToken, GetPendingFollow);
+InstaRoute.get("/media/profile", decodeToken, ProfileMedia);
 // Post
 InstaRoute.get("/post", decodeToken, Post);
 InstaRoute.post("/post", decodeToken, uploadPost.array("photos", 3), NewPost);
@@ -73,6 +75,6 @@ InstaRoute.post("/like/post", decodeToken, Like);
 InstaRoute.post("/like/comment", decodeToken, LikeComment);
 InstaRoute.post("/comment", decodeToken, AddComment);
 InstaRoute.delete("/comment", decodeToken, RemoveComment);
-InstaRoute.get("/media", decodeToken, Media);
+InstaRoute.get("/media/post", decodeToken, Media);
 
 module.exports = InstaRoute;
