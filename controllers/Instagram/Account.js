@@ -12,7 +12,7 @@ const Register = async (req, res) => {
             userId: mongooseObjectId(req.tokenData._id),
         })) !== null
     )
-        return response(res, true, "Already Registered");
+        response(res, true, "Already Registered");
     else {
         const query = InstagramAccountModel({
             userId: req.tokenData._id,
@@ -22,7 +22,7 @@ const Register = async (req, res) => {
         });
         query.save((err, result) => {
             if (err) throw err;
-            return response(res, true, "Registration Successful");
+            response(res, true, "Registration Successful");
         });
     }
 };
@@ -35,7 +35,7 @@ const Profile = (req, res) => {
         (err, data) => {
             if (err) throw err;
             if (data.locked && data.follower.includes(req.tokenData._id))
-                return response(res, true, "Profile Fetched", {
+                response(res, true, "Profile Fetched", {
                     name: data.name,
                     bio: data.bio,
                     profileIcon: data.profileIcon,
@@ -44,7 +44,7 @@ const Profile = (req, res) => {
                     following: data.following,
                 });
             else
-                return response(res, true, "Profile Fetched", {
+                response(res, true, "Profile Fetched", {
                     name: data.name,
                     bio: data.bio,
                     profileIcon: data.profileIcon,
@@ -80,9 +80,8 @@ const Bio = (req, res) => {
         { bio: req.body.bio },
         (err, result) => {
             if (err) throw err;
-            if (result.modifiedCount === 1)
-                return response(res, true, "Bio Updated");
-            else return response(res, false, "Unable to update Bio");
+            if (result.modifiedCount === 1) response(res, true, "Bio Updated");
+            else response(res, false, "Unable to update Bio");
         }
     );
 };
@@ -92,7 +91,7 @@ const Follow = async (req, res) => {
      */
     InstagramAccountModel.findOne(
         { userId: mongooseObjectId(req.body.userId) },
-        { following: 1, pendingFollow: 1 },
+        { following: 1, pendingFollow: 1, locked: 1 },
         (err, result) => {
             if (err) throw err;
             if (result.following.includes(req.tokenData._id))
@@ -103,6 +102,33 @@ const Follow = async (req, res) => {
                 );
             else if (result.pendingFollow.includes(req.tokenData._id))
                 response(res, false, "Already request to follow");
+            else if (locked)
+                InstagramAccountModel.updateOne(
+                    { userId: mongooseObjectId(req.tokenData._id) },
+                    {
+                        $addToSet: { followers: req.body.userId },
+                    },
+                    (err, result) => {
+                        if (err) throw err;
+                        if (result.modifiedCount === 1)
+                            InstagramAccountModel.updateOne(
+                                { userId: mongooseObjectId(req.body.userId) },
+                                { $addToSet: { following: req.tokenData._id } },
+                                (err, result1) => {
+                                    if (err) throw err;
+                                    if (result1.modifiedCount === 1)
+                                        response(res, true, "Follow Accepted");
+                                    else
+                                        response(
+                                            res,
+                                            false,
+                                            "Unable to accept Follow"
+                                        );
+                                }
+                            );
+                        else response(res, false, "Unable to accept Follow");
+                    }
+                );
             else
                 InstagramAccountModel.updateOne(
                     { userId: mongooseObjectId(req.body.userId) },
@@ -110,9 +136,9 @@ const Follow = async (req, res) => {
                     (err, result) => {
                         if (err) throw err;
                         if (result.modifiedCount === 1)
-                            return response(res, true, "Follow request sent");
+                            response(res, true, "Follow request sent");
                         else
-                            return response(
+                            response(
                                 res,
                                 false,
                                 "Unable to send follow request"
@@ -149,25 +175,16 @@ const ApproveFollow = (req, res) => {
                                 (err, result1) => {
                                     if (err) throw err;
                                     if (result1.modifiedCount === 1)
-                                        return response(
-                                            res,
-                                            true,
-                                            "Follow Accepted"
-                                        );
+                                        response(res, true, "Follow Accepted");
                                     else
-                                        return response(
+                                        response(
                                             res,
                                             false,
                                             "Unable to accept Follow"
                                         );
                                 }
                             );
-                        else
-                            return response(
-                                res,
-                                false,
-                                "Unable to accept Follow"
-                            );
+                        else response(res, false, "Unable to accept Follow");
                     }
                 );
             } else response(res, false, "Unable to approve follow");
@@ -184,8 +201,8 @@ const RejectFollow = (req, res) => {
         (err, result) => {
             if (err) throw err;
             if (result.modifiedCount === 1)
-                return response(res, true, "Follow Rejected");
-            else return response(res, false, "Unable to reject follow");
+                response(res, true, "Follow Rejected");
+            else response(res, false, "Unable to reject follow");
         }
     );
 };
@@ -215,11 +232,11 @@ const UnFollow = (req, res) => {
                             result.modifiedCount === 1 ||
                             result1.modifiedCount === 1
                         )
-                            return response(res, true, "Unfollowed");
-                        else return response(res, false, "Unable to unfollow");
+                            response(res, true, "Unfollowed");
+                        else response(res, false, "Unable to unfollow");
                     }
                 );
-            else return response(res, false, "Unable to unFollow");
+            else response(res, false, "Unable to unFollow");
         }
     );
 };
@@ -234,7 +251,7 @@ const GetFollower = (req, res) => {
         { username: 1, userId: 1, profileIcon: 1 },
         (err, data) => {
             if (err) throw err;
-            return response(res, true, "Followers fetched", data);
+            response(res, true, "Followers fetched", data);
         }
     );
 };
@@ -249,7 +266,7 @@ const GetFollowing = (req, res) => {
         { username: 1, userId: 1, profileIcon: 1 },
         (err, data) => {
             if (err) throw err;
-            return response(res, true, "Following fetched", data);
+            response(res, true, "Following fetched", data);
         }
     );
 };
@@ -261,7 +278,7 @@ const GetPendingFollow = (req, res) => {
         { pendingFollow: 1 },
         (err, data) => {
             if (err) throw err;
-            return response(res, true, "Pending Follow Fetched", data);
+            response(res, true, "Pending Follow Fetched", data);
         }
     );
 };
