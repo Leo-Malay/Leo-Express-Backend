@@ -1,4 +1,4 @@
-const StoreRoute = require("express").Router();
+const Router = require("express").Router;
 const {
     NewProduct,
     UpdateProduct,
@@ -12,16 +12,22 @@ const { AddCart, UpdateQty, RemoveCart } = require("../controllers/Store/Cart");
 const { PlaceOrder, CancelOrder } = require("../controllers/Store/Order");
 const { decodeToken } = require("../utils/token");
 
-StoreRoute.post("/product", decodeToken, NewProduct);
-StoreRoute.put("/product", decodeToken, UpdateProduct);
-StoreRoute.delete("/product", decodeToken, DeleteProduct);
-StoreRoute.post("/stock", decodeToken, UpdateAvailableStock);
-StoreRoute.post("/product/option", decodeToken, AddOption);
-StoreRoute.put("/product/option", decodeToken, UpdateOption);
-StoreRoute.delete("/product/option", decodeToken, RemoveOption);
+/** User */
+const StoreUserRouter = Router();
 StoreRoute.post("/cart", decodeToken, AddCart);
 StoreRoute.put("/cart", decodeToken, UpdateQty);
 StoreRoute.delete("/cart", decodeToken, RemoveCart);
 StoreRoute.post("/order", decodeToken, PlaceOrder);
 StoreRoute.delete("/order", decodeToken, CancelOrder);
-module.exports = StoreRoute;
+
+/** Admin */
+const StoreAdminRouter = Router();
+StoreAdminRoute.post("/product", decodeToken, NewProduct);
+StoreAdminRoute.put("/product", decodeToken, UpdateProduct);
+StoreAdminRoute.delete("/product", decodeToken, DeleteProduct);
+StoreAdminRoute.post("/stock", decodeToken, UpdateAvailableStock);
+StoreAdminRoute.post("/product/option", decodeToken, AddOption);
+StoreAdminRoute.put("/product/option", decodeToken, UpdateOption);
+StoreAdminRoute.delete("/product/option", decodeToken, RemoveOption);
+
+module.exports = { StoreAdminRouter, StoreUserRouter };
