@@ -65,7 +65,39 @@
         <th>Description</th>
     </tr>
     <tr>
-        <td>1</td>
+        <th>1</th>
+        <th>/register</th>
+        <th>POST</th>
+        <th>YES</th>
+        <th>name, address:{al1, al2, city, state, country, pincode}, mobile, email</th>
+        <th>To register yourself as merchant.</th>
+    </tr>
+    <tr>
+        <th>2</th>
+        <th>/merchantToken</th>
+        <th>POST</th>
+        <th>NO</th>
+        <th>email, password</th>
+        <th>Obtain merchant token for all merchant/admin activity</th>
+    </tr>
+    <tr>
+        <th>3</th>
+        <th>/contact</th>
+        <th>PUT</th>
+        <th>YES</th>
+        <th>mobile, email</th>
+        <th>To update your merchant account email or mobile number</th>
+    </tr>
+    <tr>
+        <th>4</th>
+        <th>/address</th>
+        <th>PUT</th>
+        <th>YES</th>
+        <th>al1, al2, city, state, country, pincode</th>
+        <th>To update address of your merchant account</th>
+    </tr>
+    <tr>
+        <td>5</td>
         <td>/product</td>
         <td>POST</td>
         <td>Yes</td>
@@ -73,7 +105,7 @@
         <td>To add a new product listing to the store</td>
     </tr>
     <tr>
-        <td>2</td>
+        <td>6</td>
         <td>/product</td>
         <td>PUT</td>
         <td>Yes</td>
@@ -81,7 +113,7 @@
         <td>To update product data in the post</td>
     </tr>
     <tr>
-        <td>3</td>
+        <td>7</td>
         <td>/product</td>
         <td>DELETE</td>
         <td>Yes</td>
@@ -89,7 +121,7 @@
         <td>To delete product listing</td>
     </tr>
     <tr>
-        <td>4</td>
+        <td>8</td>
         <td>/stock</td>
         <td>POST</td>
         <td>Yes</td>
@@ -97,7 +129,7 @@
         <td>To update the available stock of that specific product</td>
     </tr>
     <tr>
-        <td>5</td>
+        <td>9</td>
         <td>/product/option</td>
         <td>POST</td>
         <td>Yes</td>
@@ -105,7 +137,7 @@
         <td>Add a new Option for that existing product listing</td>
     </tr>
     <tr>
-        <td>6</td>
+        <td>10</td>
         <td>/product/option</td>
         <td>PUT</td>
         <td>Yes</td>
@@ -113,12 +145,11 @@
         <td>Update option of an existing product</td>
     </tr>
     <tr>
-        <td>7</td>
+        <td>11</td>
         <td>/product/option</td>
         <td>DELETE</td>
         <td>Yes</td>
         <td>productId, optionId</td>
         <td>Remove a specific option for the existing product listed</td>
     </tr>
-    
 </table>

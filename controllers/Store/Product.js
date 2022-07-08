@@ -1,4 +1,4 @@
-const { StoreProductModel } = require("../../models/Store");
+const { StoreProductModel, StoreMerchantModel } = require("../../models/Store");
 const { response } = require("../../utils/response");
 const mongooseObjectId = require("mongoose").Types.ObjectId;
 
@@ -12,7 +12,7 @@ const NewProduct = (req, res) => {
         description: req.body.description || [],
         images: req.body.images || [],
         specs: req.body.specs || {},
-        soldBy: req.tokenData._id,
+        soldBy: req.tokenData.merchantId,
         offers: req.body.offers || [],
     });
     query.save((err, data) => {
@@ -28,7 +28,7 @@ const UpdateProduct = (req, res) => {
     StoreProductModel.updateOne(
         {
             _id: mongooseObjectId(req.body.productId),
-            soldBy: req.tokenData._id,
+            soldBy: req.tokenData.merchantId,
         },
         req.body.updates,
         (err, result) => {
@@ -46,7 +46,7 @@ const DeleteProduct = async (req, res) => {
     StoreProductModel.deleteOne(
         {
             _id: mongooseObjectId(req.body.productId),
-            soldBy: req.tokenData._id,
+            soldBy: req.tokenData.merchantId,
         },
         (err, result) => {
             if (err) throw err;
@@ -63,7 +63,7 @@ const UpdateAvailableStock = (req, res) => {
     StoreProductModel.updateOne(
         {
             _id: mongooseObjectId(req.body.productId),
-            soldBy: req.tokenData._id,
+            soldBy: req.tokenData.merchantId,
             options: {
                 $elemMatch: { _id: mongooseObjectId(req.body.optionId) },
             },
@@ -84,7 +84,7 @@ const AddOption = (req, res) => {
     StoreProductModel.updateOne(
         {
             _id: mongooseObjectId(req.body.productId),
-            soldBy: req.tokenData._id,
+            soldBy: req.tokenData.merchantId,
         },
         {
             $addToSet: {
@@ -109,7 +109,7 @@ const UpdateOption = (req, res) => {
     StoreProductModel.updateOne(
         {
             productId: mongooseObjectId(req.body.productId),
-            soldBy: req.tokenData._id,
+            soldBy: req.tokenData.merchantId,
             options: {
                 $elemMatch: { _id: mongooseObjectId(req.body.optionId) },
             },
@@ -135,7 +135,7 @@ const RemoveOption = (req, res) => {
     StoreProductModel.updateOne(
         {
             productId: mongooseObjectId(req.body.productId),
-            soldBy: req.tokenData._id,
+            soldBy: req.tokenData.merchantId,
         },
         {
             $pull: {

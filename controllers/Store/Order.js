@@ -2,6 +2,7 @@ const { StoreCartModel, StoreOrderModel } = require("../../models/Store");
 const mongooseObjectId = require("mongoose").Types.ObjectId;
 const { response } = require("../../utils/response");
 
+const Order = (req, res) => {};
 const PlaceOrder = (req, res) => {
     /**
      * Body: txnId, type, amount
@@ -63,5 +64,7 @@ const CancelOrder = (req, res) => {
         }
     );
 };
+const PendingOrder = (req, res) => {};
+const UpdateOrder = (req, res) => {};
 
-module.exports = { PlaceOrder, CancelOrder };
+module.exports = { Order, PlaceOrder, CancelOrder, PendingOrder, UpdateOrder };

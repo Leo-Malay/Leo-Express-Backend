@@ -2,6 +2,41 @@ const db = require("../db");
 const mongooseSchema = require("mongoose").Schema;
 const mongooseObjectId = require("mongoose").Types.ObjectId;
 
+const StoreMerchantModel = db.model(
+    "Store-Merchant",
+    new mongooseSchema({
+        userId: { type: mongooseObjectId, required: true },
+        name: { type: String, unique: true, required: true },
+        token: { type: String, required: false, default: null },
+        products: [],
+        transactions: [],
+        balance: { type: Number, min: 0, default: 0 },
+        reviews: [
+            {
+                fromUser: {
+                    type: mongooseObjectId,
+                    required: true,
+                    unique: true,
+                },
+                stars: { type: Number, max: 5, min: 0, required: true },
+                comment: { type: String, required: false },
+            },
+        ],
+        address: {
+            al1: { type: String, required: true },
+            al2: { type: String, required: true },
+            city: { type: String, required: true },
+            state: { type: String, required: true },
+            country: { type: String, required: true },
+            pincode: { type: String, required: true },
+        },
+        contact: {
+            mobile: { type: String, required: true },
+            email: { type: String, required: true },
+        },
+    }),
+    "Store-Merchant"
+);
 const StoreProductModel = db.model(
     "Store-Product",
     new mongooseSchema({
@@ -59,4 +94,9 @@ const StoreOrderModel = db.model(
     "Store-Order"
 );
 
-module.exports = { StoreProductModel, StoreCartModel, StoreOrderModel };
+module.exports = {
+    StoreProductModel,
+    StoreCartModel,
+    StoreOrderModel,
+    StoreMerchantModel,
+};
